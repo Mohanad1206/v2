@@ -1,0 +1,58 @@
+# Optional per-site hints. You can leave arrays empty and the scraper will use heuristics.
+# You can add CSS selectors for product cards and fields if you want precision later.
+# Example:
+# - host: "2b.com.eg"
+#   include_paths: ["/gaming", "/en/gaming"]
+#   product_card: ".product-item"
+#   name: ".product-item-link"
+#   price: ".price"
+#   availability: ".stock span"
+sites:
+  - host: "games2egypt.com"
+    include_paths: ["/product", "/collections", "/category", "/gaming"]
+    product_card: ""
+    name: ""
+    price: ""
+    availability: ""
+  - host: "2b.com.eg"
+    include_paths: ["/gaming", "/en/gaming", "/ar/gaming"]
+    product_card: ""
+    name: ""
+    price: ""
+    availability: ""
+  - host: "shamystores.com"
+    include_paths: ["/collections", "/category", "/gaming"]
+    product_card: ""
+    name: ""
+    price: ""
+    availability: ""
+  - host: "gamesworldegypt.com"
+    include_paths: ["/product", "/collections", "/category"]
+    product_card: ""
+    name: ""
+    price: ""
+    availability: ""
+  - host: "egygamer.com"
+    include_paths: ["/product", "/category", "/gaming"]
+  - host: "thegamecaveegypt.com"
+    include_paths: ["/product", "/category", "/gaming"]
+  - host: "gamerscolony.net"
+    include_paths: ["/product", "/category", "/gaming"]
+  - host: "egyptlaptop.com"
+    include_paths: ["/gaming", "/games", "/product", "/category"]
+  - host: "compume.com.eg"
+    include_paths: ["/gaming", "/product", "/category"]
+  - host: "compumarts.com"
+    include_paths: ["/gaming", "/product", "/category"]
+  - host: "hardwaremarket.net"
+    include_paths: ["/gaming", "/product", "/category"]
+  - host: "ahw.store"
+    include_paths: ["/gaming", "/product", "/category"]
+  - host: "pcs-souq.com"
+    include_paths: ["/gaming", "/product", "/category"]
+  - host: "rabbitstore-eg.com"
+    include_paths: ["/gaming", "/product", "/category"]
+  - host: "tv-it.com"
+    include_paths: ["/gaming", "/product", "/category"]
+  - host: "egyptgamestore.com"
+    include_paths: ["/gaming", "/product", "/category"]
