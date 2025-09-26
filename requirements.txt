@@ -6,3 +6,4 @@ tqdm==4.66.5
 tenacity==9.0.0
 pydantic==2.9.2
 playwright==1.47.0
+python-dotenv==1.0.1
