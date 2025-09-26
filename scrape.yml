@@ -1,0 +1,78 @@
+name: Scrape Gaming Sites (Text)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 2 * * *"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: |
+          python -m playwright install --with-deps
+
+      - name: Run scraper (rooted)
+        env:
+          SCRAPER_FIRST_N: ${{ vars.SCRAPER_FIRST_N }}
+          SCRAPER_DYNAMIC: ${{ vars.SCRAPER_DYNAMIC }}
+        run: |
+          : "${SCRAPER_FIRST_N:=50}"
+          : "${SCRAPER_DYNAMIC:=auto}"
+          python scrape.py --first-n "$SCRAPER_FIRST_N" --dynamic "$SCRAPER_DYNAMIC"
+
+      - name: Upload output as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: text-results
+          path: output/*.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit & push output to repo
+        if: ${{ hashFiles('output/*.txt') != '' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/*.txt || true
+          git commit -m "chore(output): add scrape results [skip ci]" || echo "Nothing to commit"
+          git push
+
+      - name: "Optional: Notify Make webhook (if set)"
+        # Simple truthy check avoids YAML parsing quirks:
+        if: ${{ secrets.MAKE_WEBHOOK_URL }}
+        env:
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          SHA: ${{ github.sha }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          payload=$(printf '%s'             "{"source":"github","repo":"$REPO","run_id":"$RUN_ID","sha":"$SHA","ts":"$RUN_NUMBER"}")
+          curl -fsS -X POST -H "Content-Type: application/json" -d "$payload" "$MAKE_WEBHOOK_URL"
